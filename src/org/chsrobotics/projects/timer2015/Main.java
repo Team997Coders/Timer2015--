@@ -5,6 +5,8 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Created by Chris G. on 2/10/2015.
@@ -33,23 +35,41 @@ public class Main {
             }
         };
         JButton startButton = new JButton("Start");
-        t1 = new Timer(0,          e -> playSound(start));
-        t2 = new Timer(15 * 1000,  e -> playSound(endAuto));
-        t3 = new Timer(135 * 1000, e -> playSound(endTeleop));
-        t4 = new Timer(150 * 1000, e -> playSound(end));
-        startButton.addActionListener(e -> {
-            if(t1.isRunning()) {
-                t1.restart();
-                t2.restart();
-                t3.restart();
-                t4.restart();
-            } else {
-                t1.start();
-                t2.start();
-                t3.start();
-                t4.start();
+        t1 = new Timer(0, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                playSound(start);
             }
-            time = System.currentTimeMillis();
+        });
+        t2 = new Timer(15 * 1000, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                playSound(endAuto);
+            }
+        });
+        t3 = new Timer(135 * 1000, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                playSound(endTeleop);
+            }
+        });
+        t4 = new Timer(150 * 1000, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                playSound(end);
+            }
+        });
+        startButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (t1.isRunning()) {
+                    t1.restart();
+                    t2.restart();
+                    t3.restart();
+                    t4.restart();
+                } else {
+                    t1.start();
+                    t2.start();
+                    t3.start();
+                    t4.start();
+                }
+                time = System.currentTimeMillis();
+            }
         });
         panel.add(startButton);
         frame.add(panel);
