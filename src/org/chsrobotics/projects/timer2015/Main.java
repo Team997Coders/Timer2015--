@@ -17,6 +17,10 @@ public class Main {
     public static final String endTeleop = "";
     public static final String end = "";
 
+    public static final int timeAuto = 1000 * 15;
+    public static final int timeTeleop = 1000 * 120;
+    public static final int timeEnding = 1000 * 15;
+
     private long time = System.currentTimeMillis();
 
     Timer t1, t2, t3, t4;
@@ -29,8 +33,19 @@ public class Main {
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 g.setColor(Color.black);
-                //if(t1.isRunning())
-                    g.drawString(((double) (System.currentTimeMillis() - time)) / 1000.0 + " seconds", 70, 100);
+                if(t4.isRunning()) {
+                    g.drawString("Total: " + ((double) (System.currentTimeMillis() - time)) / 1000.0 + " seconds", 70, 100);
+                    if (t2.isRunning())
+                        g.drawString("To End of Auto: " + ((double) (timeAuto - (System.currentTimeMillis() - time))) / 1000.0, 70, 130);
+                    else if (t3.isRunning())
+                        g.drawString("To End of Teleop: " + ((double) (timeTeleop + timeAuto - (System.currentTimeMillis() - time))) / 1000.0, 70, 130);
+                    if (t4.isRunning()) {
+                        if((t2.isRunning() || t3.isRunning()))
+                            g.drawString("To End of Match: " + ((double) (timeEnding + timeTeleop + timeAuto - (System.currentTimeMillis() - time))) / 1000.0, 70, 160);
+                        else
+                            g.drawString("To End of Match: " + ((double) (timeEnding + timeTeleop + timeAuto - (System.currentTimeMillis() - time))) / 1000.0, 70, 130);
+                    }
+                }
                 repaint();
             }
         };
@@ -38,26 +53,30 @@ public class Main {
         t1 = new Timer(0, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 playSound(start);
+                t1.stop();
             }
         });
-        t2 = new Timer(15 * 1000, new ActionListener() {
+        t2 = new Timer(timeAuto, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 playSound(endAuto);
+                t2.stop();
             }
         });
-        t3 = new Timer(135 * 1000, new ActionListener() {
+        t3 = new Timer(timeTeleop + timeAuto, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 playSound(endTeleop);
+                t3.stop();
             }
         });
-        t4 = new Timer(150 * 1000, new ActionListener() {
+        t4 = new Timer(timeEnding + timeTeleop + timeAuto, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 playSound(end);
+                t4.stop();
             }
         });
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (t1.isRunning()) {
+                if (t4.isRunning()) {
                     t1.restart();
                     t2.restart();
                     t3.restart();
